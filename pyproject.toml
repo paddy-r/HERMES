@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hermes"
+version = "0.0.1"
+description = "Hierarchical Economic and Residential Microsimulation for Small areas"
+readme = "README.md"
+authors = [
+    {name = "Hugh P. Rice", email = "h.p.rice@leeds.ac.uk"},
+    {name = "Ricardo Colasanti", email = "r.l.colasanti@leeds.ac.uk"},
+    {name = "Andreas Hoehn", email = "andreas.hoehn@glasgow.ac.uk"},
+]
+requires-python = ">= 3.13"
+dependencies = [
+    "numpy",
+    "jupyterlab",
+    "ipykernel" ,
+#    'pandas',
+#    'openpyxl',
+#    'geopandas',
+]
