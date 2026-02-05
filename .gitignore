@@ -18,6 +18,8 @@
 # All installation-related files
 src/*egg-info/
 src/*egg-info/*
+src/hermes/__pycache__/
+src/hermes/__pycache__/*
 
 # Input population and model data folders
 models/
