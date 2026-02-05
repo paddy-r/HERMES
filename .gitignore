@@ -18,6 +18,10 @@
 # All installation-related files
 src/*egg-info/
 src/*egg-info/*
+*__pycache__/
+*__pycache__/*
+*/*/__pycache__/
+*/*/__pycache__/*
 src/hermes/__pycache__/
 src/hermes/__pycache__/*
 
