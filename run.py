@@ -3,6 +3,10 @@ import argparse
 import hermes.base_classes
 import hermes.utilities as hutils
 
+DEFAULTS = {"signature": True,
+            "dump": True,
+            }
+
 
 def run_with_config(spec: dict):
     if spec["signature"]:
@@ -29,10 +33,10 @@ if __name__ == "__main__":
                         help="HERMES model config: specifies input population and transition models",
                         )
     parser.add_argument("-s", "--signature", required=False, type=str, dest='signature',
-                        help="Show HERMES signature at runtime", default=True,
+                        help="Show HERMES signature at runtime", default=DEFAULTS["signature"],
                         )
     parser.add_argument("-d", "--dump", required=False, type=str, dest='dump',
-                        help="Output population at each step at runtime", default=True,
+                        help="Output population at each step at runtime", default=DEFAULTS["dump"],
                         )
 
     args = parser.parse_args()
@@ -41,7 +45,5 @@ if __name__ == "__main__":
 
 
     # # Testing without argparse
-    # from hermes.base_classes import Simulation as sim
-    # spec = {'universe': 'demo_universe_1', 'config': 'config_1'}
-    # s = sim(spec)
-    # s.run()
+    # spec = DEFAULTS | {'universe': 'fertility', 'config': 'config_1'}
+    # run_with_config(spec)
