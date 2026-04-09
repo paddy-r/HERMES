@@ -30,6 +30,12 @@ def get_input_path(universe: str, upper_path: str=INPATH_DEFAULT) -> str:
     full_path = os.path.join(upper_path, universe)
     return full_path
 
+def get_latest_by_config(universe: str, config: str, outpath: str=OUTPATH_DEFAULT) -> str:
+    universe_fullname = JOIN_CHARACTER + universe + JOIN_CHARACTER
+    _path = sorted([el for el in os.listdir(outpath) if universe_fullname in el and el.endswith(config)])[-1]
+    fullpath = os.path.join(outpath, _path)
+    return fullpath
+
 def resolve_transition_priorities(transitions: list) -> list:
     """Parse and order transition model priorities as follows:
      1. First, order by any priorities stated in transitions list, then
