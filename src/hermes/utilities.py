@@ -3,11 +3,17 @@ import hermes
 import os
 from os.path import dirname as up
 import datetime
+import pandas as pd
+from string import ascii_lowercase as alphabet
 
 JOIN_CHARACTER = '__'
 INPATH_DEFAULT = os.path.join(up(up(up(hermes.__file__))), "universes")
 OUTPATH_DEFAULT = os.path.join(up(up(up(hermes.__file__))), "output")
 PRIORITY_MISSING_DEFAULT = -1
+
+UKHLS_DATA_PATH = os.path.join(up(up(up(up(up(__file__))))), "data", "UKDA-6614-stata", "stata", "stata13_se", "ukhls")
+BHPS_DATA_PATH = os.path.join(up(up(up(up(up(__file__))))), "data", "UKDA-6614-stata", "stata", "stata13_se", "bhps")
+
 
 def print_signature() -> None:
     fullpath = os.path.join(up(__file__), "signature.txt")
@@ -51,3 +57,43 @@ def flatten(lol: list) -> list:
     for l in lol:
         flat.extend(l)
     return flat
+
+def get_ukhls_prefix(year):
+    """Get wave letter based on year for US data.
+
+    Waves 1990-2008 are waves A-R of BHPS, 2009 onwards are UKHLS.
+
+    Examples
+    --------
+    For year 1992 this will return wave string "c".
+
+    Parameters
+    ----------
+    year : int
+        Year of survey.
+    Returns
+    -------
+    wave_letter : str
+        Letter that corresponds to wave.
+    """
+    # BHPS/UKHLS naming convention, with BHPS beginning with "b" in all cases, then both with "a_", "b_" etc.
+    if year < 2009:
+        wave_number = year - 1991
+    else:
+        wave_number = year - 2008
+    wave_letter = alphabet[wave_number]
+    if year < 2009:
+        wave_letter = "b" + wave_letter
+    return wave_letter
+
+def get_ukhls_data(year, dataset):
+    """Retrieve UKHLS/BHPS data from adjacent folder for specified year and dataset type."""
+    year_prefix = get_ukhls_prefix(year)
+    if year < 2009:
+        data_path = BHPS_DATA_PATH
+    else:
+        data_path = UKHLS_DATA_PATH
+    dataset_filename = year_prefix + "_" + dataset + ".dta"
+    dataset_fullpath = os.path.join(data_path, dataset_filename)
+    data = pd.read_stata(dataset_fullpath, convert_categoricals=False)
+    return data
