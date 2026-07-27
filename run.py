@@ -26,8 +26,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="HERMES specification parser",
                                      )
 
-    parser.add_argument("-u", "--universe", required=True, type=str, dest='universe',
-                        help="HERMES universe: specifies a folder containing data and config",
+    parser.add_argument("-u", "--universe", type=str, dest='universe', default='core',
+                        help="HERMES universe: specifies a folder containing data and config (default: core)",
                         )
     parser.add_argument("-c", "--config", required=True, type=str, dest='config',
                         help="HERMES model config: specifies input population and transition models",
