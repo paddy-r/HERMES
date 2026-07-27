@@ -17,7 +17,7 @@ dependencies = [
     "numpy",
     "jupyterlab",
     "ipykernel" ,
-#    'pandas',
+    'pandas',
 #    'openpyxl',
 #    'geopandas',
 ]
