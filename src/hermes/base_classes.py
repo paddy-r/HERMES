@@ -2,10 +2,28 @@
 import sys
 import os
 import json
-from abc import ABC
+from abc import ABC, abstractmethod
 import hermes.utilities as hutils
 import pandas as pd
 import importlib
+
+
+class RateSource(ABC):
+
+    @abstractmethod
+    def evaluate(self, domains):
+        pass
+
+
+class FunctionalForm(RateSource):
+
+    registry = {}
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        if hasattr(cls, "name"):
+            FunctionalForm.registry[cls.name] = cls
 
 
 class Simulation:
