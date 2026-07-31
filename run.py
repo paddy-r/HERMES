@@ -1,6 +1,6 @@
 # HR 05/02/26 Run script
 import argparse
-import hermes.base_classes
+import hermes.engine
 import hermes.utilities as hutils
 
 DEFAULTS = {"signature": True,
@@ -17,7 +17,8 @@ def run_with_config(spec: dict):
     print(f"Universe: {spec["universe"]}")
     print(f"Config: {spec["config"]}")
 
-    simulation = hermes.base_classes.Simulation(spec=spec)
+    simulation = hermes.engine.Simulation(spec=spec)
+    simulation.verify()
     simulation.run()
 
 

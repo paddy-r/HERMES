@@ -1,14 +1,11 @@
 import numpy as np
-from hermes.base_classes import FunctionalForm
+from hermes.rate_sources.base import FunctionalForm
 
 
 class Power(FunctionalForm):
 
-    name = "power"
+    def evaluate(self, domains):
 
-    def __init__(self, parameters):
-        self.a, self.b = parameters
-
-    def evaluate(self, x):
-        return self.a * np.power(x, self.b)
-    
+        x = domains[self.domains[0]]
+        a, b = self.parameters
+        return a * np.power(x, b)

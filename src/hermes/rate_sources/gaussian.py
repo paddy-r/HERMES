@@ -1,16 +1,12 @@
 import numpy as np
-from hermes.base_classes import FunctionalForm
+from hermes.rate_sources.base import FunctionalForm
 
 
 class Gaussian(FunctionalForm):
 
-    name = "gaussian"
+    def evaluate(self, domains):
 
-    def __init__(self, parameters):
-        self.a, self.mu, self.sigma = parameters
+        x = domains[self.domains[0]]
+        a, mu, sigma = self.parameters
+        return a * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
 
-    def evaluate(self, x):
-        return self.a * np.exp(
-            -((x - self.mu) ** 2)
-            / (2 * self.sigma ** 2)
-        )

@@ -1,14 +1,10 @@
 import numpy as np
-from hermes.base_classes import FunctionalForm
+from hermes.rate_sources.base import FunctionalForm
 
 
 class Polynomial(FunctionalForm):
 
-    name = "polynomial"
+    def evaluate(self, domains):
 
-    def __init__(self, parameters):
-        self.parameters = parameters
-
-    def evaluate(self, x):
+        x = domains[self.domains[0]]
         return np.polyval(self.parameters, x)
-    

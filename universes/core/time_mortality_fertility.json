@@ -1,0 +1,55 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Time",
+
+      "priority": 1
+    },
+
+    {
+      "name": "Mortality",
+
+      "priority": 2,
+
+      "rate_source": {
+        "type": "function",
+        "function": "exponential",
+
+        "domains": [
+          "age"
+        ],
+
+        "parameters": [
+          0.0005,
+          0.0001,
+          0.08
+        ]
+      }
+    },
+
+    {
+      "name": "Fertility",
+
+      "priority": 3,
+
+      "rate_source": {
+        "type": "function",
+        "function": "gaussian",
+
+        "domains": [
+          "age"
+        ],
+
+        "parameters": [
+          0.08,
+          30,
+          5
+        ]
+      }
+    }
+  ],
+
+  "steps": 10
+}

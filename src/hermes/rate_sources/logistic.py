@@ -1,18 +1,11 @@
 import numpy as np
-from hermes.base_classes import FunctionalForm
+from hermes.rate_sources.base import FunctionalForm
 
 
 class Logistic(FunctionalForm):
 
-    name = "logistic"
+    def evaluate(self, domains):
 
-    def __init__(self, parameters):
-        self.L, self.k, self.x0 = parameters
-
-    def evaluate(self, x):
-        return self.L / (
-            1 + np.exp(
-                -self.k * (x - self.x0)
-            )
-        )
-    
+        x = domains[self.domains[0]]
+        el, k, x0 = self.parameters
+        return el / (1 + np.exp(-k * (x - x0)))
