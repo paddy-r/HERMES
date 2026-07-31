@@ -1,0 +1,31 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Fertility",
+
+      "priority": 1,
+
+      "rate_source": {
+        "type": "function",
+        "function": "expression",
+
+        "domains": [
+          "age"
+        ],
+
+        "expression":
+          "alpha * exp(-((age - mu)**2)/(2 * sigma**2))",
+
+        "parameters": {
+          "alpha": 0.08,
+          "mu": 30,
+          "sigma": 5
+        }
+      }
+    }
+  ],
+
+  "steps": 5
+}

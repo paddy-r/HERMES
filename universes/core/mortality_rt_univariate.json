@@ -1,0 +1,18 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Mortality",
+
+      "priority": 1,
+
+      "rate_source": {
+        "type": "rate_table",
+        "file": "mortality_rt_univariate.csv"
+      }
+    }
+  ],
+
+  "steps": 5
+}

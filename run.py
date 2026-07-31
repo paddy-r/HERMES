@@ -1,6 +1,6 @@
 # HR 05/02/26 Run script
 import argparse
-import hermes.base_classes
+import hermes.engine
 import hermes.utilities as hutils
 
 DEFAULTS = {"signature": True,
@@ -17,7 +17,8 @@ def run_with_config(spec: dict):
     print(f"Universe: {spec["universe"]}")
     print(f"Config: {spec["config"]}")
 
-    simulation = hermes.base_classes.Simulation(spec=spec)
+    simulation = hermes.engine.Simulation(spec=spec)
+    simulation.verify()
     simulation.run()
 
 
@@ -26,8 +27,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="HERMES specification parser",
                                      )
 
-    parser.add_argument("-u", "--universe", required=True, type=str, dest='universe',
-                        help="HERMES universe: specifies a folder containing data and config",
+    parser.add_argument("-u", "--universe", type=str, dest='universe', default='core',
+                        help="HERMES universe: specifies a folder containing data and config (default: core)",
                         )
     parser.add_argument("-c", "--config", required=True, type=str, dest='config',
                         help="HERMES model config: specifies input population and transition models",
