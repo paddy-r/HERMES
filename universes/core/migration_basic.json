@@ -1,0 +1,24 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Time",
+      "priority": 1
+    },
+    {
+      "name": "MigrationInternal",
+      "priority": 2
+    },
+    {
+      "name": "MigrationOut",
+      "priority": 3
+    },
+    {
+      "name": "MigrationIn",
+      "priority": 4
+    }
+  ],
+
+  "steps": 10
+}
