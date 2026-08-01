@@ -1,0 +1,72 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Time",
+      "priority": 1
+    },
+    {
+      "name": "ComingOfAge",
+      "priority": 2
+    },
+    {
+      "name": "Education",
+      "priority": 3
+    },
+    {
+      "name": "MigrationInternal",
+      "priority": 4
+    },
+    {
+      "name": "MigrationOut",
+      "priority": 5
+    },
+    {
+      "name": "MigrationIn",
+      "priority": 6
+    },
+    {
+      "name": "Fertility",
+
+      "priority": 7,
+
+      "rate_source": {
+        "type": "function",
+        "function": "gaussian",
+
+        "domains": [
+          "age"
+        ],
+
+        "parameters": [
+          0.08,
+          30,
+          5
+        ]
+      }
+    },
+    {
+      "name": "Mortality",
+
+      "priority": 8,
+
+      "rate_source": {
+        "type": "function",
+        "function": "exponential",
+
+        "domains": [
+          "age"
+        ],
+
+        "parameters": [
+          0.0005,
+          0.0001,
+          0.08
+        ]
+      }
+    }
+  ],
+
+  "steps": 10
+}

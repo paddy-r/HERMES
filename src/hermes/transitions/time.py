@@ -30,6 +30,11 @@ class Time(TransitionModel):
             "income"
         ] *= 1.02
 
+        print(
+            f"Population size: "
+            f"{len(population.data)}"
+        )
+
 
 class TimeStochastic(TransitionModel):
 
