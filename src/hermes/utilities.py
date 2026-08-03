@@ -24,12 +24,16 @@ def get_timestamp() -> str:
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     return timestamp
 
+def ensure_directory(full_path: str) -> str:
+    if not os.path.isdir(full_path):
+        os.makedirs(full_path)
+    return full_path
+
 def get_output_path(universe: str, config: str, upper_path: str=OUTPATH_DEFAULT, join_character: str=JOIN_CHARACTER) -> str:
     timestamp = get_timestamp()
     output_path = join_character.join([timestamp, universe, config])
     full_path = os.path.join(upper_path, output_path)
-    if not os.path.isdir(full_path):
-        os.makedirs(full_path)
+    full_path = ensure_directory(full_path)
     return full_path
 
 def get_input_path(universe: str, upper_path: str=INPATH_DEFAULT) -> str:
