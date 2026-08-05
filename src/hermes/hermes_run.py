@@ -13,7 +13,7 @@ def run_with_config(spec: dict):
         hutils.print_signature()  # Print HERMES signature if specified
     spec.pop("signature")
 
-    print("### Running HERMES ###")
+    print("### Running HERMES microsimulation ###")
     print(f"Universe: {spec["universe"]}")
     print(f"Config: {spec["config"]}")
 
@@ -21,10 +21,8 @@ def run_with_config(spec: dict):
     simulation.verify()
     simulation.run()
 
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description="HERMES specification parser",
+def main():
+    parser = argparse.ArgumentParser(description="HERMES microsimulation specification parser",
                                      )
 
     parser.add_argument("-u", "--universe", type=str, dest='universe', default='core',
@@ -45,6 +43,13 @@ if __name__ == "__main__":
     run_with_config(hermes_spec)
 
 
+if __name__ == "__main__":
+    main()
+
+
     # # Testing without argparse
-    # spec = DEFAULTS | {'universe': 'fertility', 'config': 'config_1'}
+    # spec = DEFAULTS | {
+    #     'universe': 'core',
+    #     'config': 'time_stochastic',
+    # }
     # run_with_config(spec)
