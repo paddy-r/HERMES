@@ -27,7 +27,7 @@ class Simulation:
             return
 
         # 3. Get config and population files
-        config_file = os.path.join(self.inpath, config + '.json')
+        config_file = os.path.join(self.inpath, "configs", config + '.json')
         with open(config_file, 'r') as f:
             run_config = json.load(f)
             self.spec.update(run_config)  # Add all parameters in config file to spec

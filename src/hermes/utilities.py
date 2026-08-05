@@ -46,6 +46,11 @@ def get_latest_by_config(universe: str, config: str, outpath: str=OUTPATH_DEFAUL
     fullpath = os.path.join(outpath, _path)
     return fullpath
 
+def get_regression_path(universe: str, upper_path: str = INPATH_DEFAULT):
+    universe_path = get_input_path(universe=universe, upper_path=upper_path)
+    regression_path = os.path.join(universe_path, "regressions")
+    return ensure_directory(regression_path)
+
 def resolve_transition_priorities(transitions: list) -> list:
     """Parse and order transition model priorities as follows:
      1. First, order by any priorities stated in transitions list, then
