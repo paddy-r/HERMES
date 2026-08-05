@@ -1,0 +1,13 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "TimeStochastic",
+
+      "priority": 1
+    }
+  ],
+
+  "steps": 20
+}
