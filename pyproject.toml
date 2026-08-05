@@ -17,7 +17,12 @@ dependencies = [
     "numpy",
     "jupyterlab",
     "ipykernel" ,
-#    'pandas',
+    'pandas',
 #    'openpyxl',
 #    'geopandas',
 ]
+
+[project.scripts]
+hermes-run = "hermes.hermes_run:main"
+hermes-regress = "hermes.hermes_regress:main"
+hermes-impute = "hermes.hermes_impute:main"

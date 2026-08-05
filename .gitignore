@@ -15,12 +15,6 @@
 */.Rhistory
 */*/.Rhistory
 
-# All installation-related files
-src/*egg-info/
-src/*egg-info/*
-src/hermes/__pycache__/
-src/hermes/__pycache__/*
-
 # Input population and model data folders
 models/
 models/*
@@ -28,3 +22,18 @@ output/
 output/*
 populations/
 populations/*
+universes/*
+!universes/core/
+!universes/core/**
+
+# All installation-related files
+src/*egg-info/
+src/*egg-info/*
+__pycache__/
+*__pycache__/
+*__pycache__/*
+*/*/__pycache__/
+*/*/__pycache__/*
+*.pyc
+src/hermes/__pycache__/
+src/hermes/__pycache__/*

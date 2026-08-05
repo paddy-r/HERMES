@@ -1,0 +1,27 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Mortality",
+
+      "priority": 1,
+
+      "rate_source": {
+        "type": "function",
+        "function": "power",
+
+        "domains": [
+          "age"
+        ],
+
+        "parameters": [
+          0.0000001,
+          3.5
+        ]
+      }
+    }
+  ],
+
+  "steps": 5
+}

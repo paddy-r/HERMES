@@ -1,0 +1,18 @@
+{
+  "population": "population.csv",
+
+  "transitions": [
+    {
+      "name": "Time",
+
+      "priority": 1
+    },
+    {
+      "name": "Education",
+
+      "priority": 2
+    }
+  ],
+
+  "steps": 10
+}
