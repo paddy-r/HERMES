@@ -26,3 +26,4 @@ dependencies = [
 hermes-run = "hermes.hermes_run:main"
 hermes-regress = "hermes.hermes_regress:main"
 hermes-impute = "hermes.hermes_impute:main"
+hermes-universe = "hermes.hermes_universe:main"
