@@ -1,5 +1,5 @@
 import numpy as np
-from hermes.rate_sources.base import FunctionalForm
+from hermes.sources.base import FunctionalForm
 
 
 class Polynomial(FunctionalForm):
