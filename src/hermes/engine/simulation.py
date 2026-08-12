@@ -21,9 +21,14 @@ class Simulation:
         self.outpath = hutils.get_output_path(universe=universe, config=config)
 
         # 2. Read in run spec
-        self.inpath = hutils.get_input_path(universe=universe)
-        if not os.path.isdir(self.inpath):
-            print("Universe input path does not exist; stopping")
+        self.inpath = hutils.get_universe_path(universe=universe)
+
+        if not os.path.isdir(
+                self.inpath
+        ):
+            print(
+                "Universe input path does not exist; stopping"
+            )
             return
 
         # 3. Get config and population files
@@ -36,7 +41,7 @@ class Simulation:
             transition["inpath"] = self.inpath
 
         # 4. Load population data
-        population_file = os.path.join(self.inpath, spec['population'])
+        population_file = os.path.join(self.inpath, "populations", spec['population'])
         population_data = pd.read_csv(population_file)
         self.population = Population(data=population_data)
 

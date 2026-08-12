@@ -182,11 +182,11 @@ class Regression:
 
         X = training_data[
             self.spec["predictors"]
-        ]
+        ].to_numpy()
 
         y = training_data[
             self.spec["response"]
-        ]
+        ].to_numpy()
 
         fit_results = regression.fit(
             X,

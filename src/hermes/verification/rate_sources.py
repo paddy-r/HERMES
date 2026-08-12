@@ -2,7 +2,7 @@ from hermes.verification.base import Verifier
 from hermes.errors import VerificationError
 
 
-class RateSourceVerifier(Verifier):
+class SourceVerifier(Verifier):
 
     priority = 30
 

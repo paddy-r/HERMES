@@ -15,8 +15,13 @@ class RegressionModel:
     def fit(self, X, y):
         raise NotImplementedError
 
-    def predict(self, X):
-        raise NotImplementedError
+    def predict(
+            self,
+            X
+    ):
+        return self.model.predict(
+            X
+        )
 
     def save(self, filepath):
         raise NotImplementedError
