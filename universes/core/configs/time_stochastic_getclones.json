@@ -1,0 +1,24 @@
+{
+  "population": "population_artefact.csv",
+
+  "population_structure": {
+
+    "area_column": "area_id",
+
+    "levels": [
+      "household_id",
+      "id"
+    ]
+
+  },
+
+  "transitions": [
+    {
+      "name": "TimeStochastic",
+
+      "priority": 1
+    }
+  ],
+
+  "steps": 10
+}
