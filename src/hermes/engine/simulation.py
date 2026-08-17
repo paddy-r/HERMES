@@ -32,7 +32,11 @@ class Simulation:
             return
 
         # 3. Get config and population files
-        config_file = os.path.join(self.inpath, "configs", config + '.json')
+        config_file = os.path.join(
+            self.inpath,
+            "configs",
+            config + '.json',
+        )
         with open(config_file, 'r') as f:
             run_config = json.load(f)
             self.spec.update(run_config)  # Add all parameters in config file to spec
@@ -41,9 +45,21 @@ class Simulation:
             transition["inpath"] = self.inpath
 
         # 4. Load population data
-        population_file = os.path.join(self.inpath, "populations", spec['population'])
+        population_file = os.path.join(
+            self.inpath,
+            "populations",
+            spec['population'],
+        )
         population_data = pd.read_csv(population_file)
-        self.population = Population(data=population_data)
+
+        population_structure = spec.get(
+            "population_structure",
+            {}
+        )
+        self.population = Population(
+            data=population_data,
+            structure=population_structure,
+        )
 
         # 5. Resolve transition model priorities, then import each dynamically + instantiate
         import hermes.transitions
@@ -71,12 +87,6 @@ class Simulation:
                 model_class = (
                     TransitionModel.registry[model]
                 )
-
-            # else:
-            #     model_class = getattr(
-            #         transitions_module,
-            #         model
-            #     )
 
             self.models.append(
                 model_class(
@@ -117,3 +127,4 @@ class Simulation:
                 self.models[j].apply_transition(self.population)
             if self.dump:
                 self.save_population(step_number=i+1)
+
