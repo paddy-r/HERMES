@@ -92,12 +92,20 @@ class Regression:
             filename
         )
 
-        data_path = (
-            hutils.get_latest_by_config(
-                universe=self.spec["universe"],
-                config=self.spec["config"]
+        if "training_path" in self.spec:
+
+            data_path = (
+                self.spec["training_path"]
             )
-        )
+
+        else:
+
+            data_path = (
+                hutils.get_latest_by_config(
+                    universe=self.spec["universe"],
+                    config=self.spec["config"]
+                )
+            )
 
         print(
             f"Training data path:\n"
