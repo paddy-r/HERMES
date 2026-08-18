@@ -1,9 +1,12 @@
 # HR 29/07/26 Simulation engine classes, moved from earlier common script to its own
 import os
 import json
+import pandas as pd
 import hermes.utilities as hutils
 from .population import Population
-import pandas as pd
+import hermes.verification
+from hermes.verification.base import Verifier
+from hermes.constants import WAVE_DATA_PREFIX
 
 
 class Simulation:
@@ -98,9 +101,6 @@ class Simulation:
 
         print("Verifying configuration...")
 
-        import hermes.verification
-        from hermes.verification.base import Verifier
-
         verifiers = sorted(Verifier.registry.values(),
                            key=lambda x: x.priority)
 
@@ -108,8 +108,10 @@ class Simulation:
             verifier().verify(self)
 
 
-    def save_population(self, step_number):
-        pop_file = "step" + str(step_number) + ".csv"
+    def save_population(self, wave_number):
+        pop_file = hutils.get_wave_filename(
+            wave_number
+        )
         fullpath = os.path.join(self.outpath, pop_file)
         self.population.data.to_csv(fullpath, index=False)
 
@@ -118,7 +120,7 @@ class Simulation:
 
         # Save input population
         if self.dump:
-            self.save_population(step_number=0)
+            self.save_population(wave_number=0)
 
         n_steps = self.spec["steps"]
         for i in range(n_steps):
@@ -126,5 +128,5 @@ class Simulation:
             for j, model in enumerate(self.models):
                 self.models[j].apply_transition(self.population)
             if self.dump:
-                self.save_population(step_number=i+1)
+                self.save_population(wave_number=i+1)
 
