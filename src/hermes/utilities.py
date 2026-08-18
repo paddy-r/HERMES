@@ -5,6 +5,7 @@ from os.path import dirname as up
 import datetime
 import pandas as pd
 from string import ascii_lowercase as alphabet
+from hermes.constants import WAVE_DATA_PREFIX
 
 JOIN_CHARACTER = '__'
 INPATH_DEFAULT = os.path.join(up(up(up(hermes.__file__))), "universes")
@@ -199,3 +200,12 @@ def get_ukhls_data(year, dataset):
     dataset_fullpath = os.path.join(data_path, dataset_filename)
     data = pd.read_stata(dataset_fullpath, convert_categoricals=False)
     return data
+
+def get_wave_filename(
+        wave_number
+):
+
+    return (
+        f"{WAVE_DATA_PREFIX}"
+        f"{wave_number}.csv"
+    )
