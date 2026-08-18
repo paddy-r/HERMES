@@ -4,6 +4,8 @@ from hermes.regressions.base import RegressionModel
 
 class LinearRegressionModel(RegressionModel):
 
+    mimimum_waves = 2
+
     def __init__(self):
 
         self.model = (

@@ -1,6 +1,7 @@
 class RegressionModel:
 
     registry = {}
+    mimimum_waves = 1
 
     def __init_subclass__(
         cls,
