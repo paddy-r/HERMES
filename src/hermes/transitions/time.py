@@ -85,3 +85,70 @@ class TimeStochastic(TransitionModel):
             alive,
             "income"
         ] *= (1 + growth)
+
+
+class TimeRegression(TransitionModel):
+
+    creates_domains = {
+        "life_status": "alive"
+    }
+
+    def apply_transition(self, population):
+
+        alive = (
+            population.data["life_status"]
+            == "alive"
+        )
+
+        population.data.loc[
+            alive,
+            "age"
+        ] += 1
+
+        current_income = (
+            population.data.loc[
+                alive,
+                "income"
+            ]
+            .copy()
+        )
+
+        predicted_values = (
+            self.rate_source.predict(
+                current_income.to_numpy().reshape(-1, 1)
+            )
+        )
+
+        population.data.loc[
+            alive,
+            "income"
+        ] = predicted_values
+
+        mean_income_before = (
+            current_income.mean()
+        )
+
+        mean_income_after = (
+            predicted_values.mean()
+        )
+
+        print(
+            f"Mean income before: "
+            f"{mean_income_before:.2f}"
+        )
+
+        print(
+            f"Mean income after: "
+            f"{mean_income_after:.2f}"
+        )
+
+        growth_factor = (
+                mean_income_after
+                /
+                mean_income_before
+        )
+
+        print(
+            f"Mean growth factor: "
+            f"{growth_factor:.6f}"
+        )

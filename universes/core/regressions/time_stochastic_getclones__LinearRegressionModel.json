@@ -1,0 +1,15 @@
+{
+    "regression_type": "LinearRegressionModel",
+    "predictors": [
+        "income"
+    ],
+    "response": "income_next",
+    "training_config": "time_stochastic_getclones",
+    "training_universe": "core",
+    "timestamp": "20260818_165611",
+    "training_rows": 410,
+    "coefficients": [
+        1.020682795680017
+    ],
+    "intercept": -10.747722625794268
+}

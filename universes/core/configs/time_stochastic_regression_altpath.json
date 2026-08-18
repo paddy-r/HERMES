@@ -13,6 +13,9 @@
         "model":
           "time_stochastic__LinearRegressionModel.pkl",
 
+        "model_path":
+          "/home/prehr/code/",
+
         "domains": [
           "income"
         ]

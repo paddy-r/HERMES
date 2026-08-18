@@ -3,4 +3,5 @@ from hermes.regressions.base import RegressionModel
 
 
 class LogisticRegressionModel(RegressionModel):
-    pass
+
+    mimimum_waves = 1

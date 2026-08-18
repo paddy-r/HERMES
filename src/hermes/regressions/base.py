@@ -1,6 +1,7 @@
 class RegressionModel:
 
     registry = {}
+    mimimum_waves = 1
 
     def __init_subclass__(
         cls,
@@ -15,8 +16,13 @@ class RegressionModel:
     def fit(self, X, y):
         raise NotImplementedError
 
-    def predict(self, X):
-        raise NotImplementedError
+    def predict(
+            self,
+            X
+    ):
+        return self.model.predict(
+            X
+        )
 
     def save(self, filepath):
         raise NotImplementedError

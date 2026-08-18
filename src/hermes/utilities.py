@@ -5,6 +5,7 @@ from os.path import dirname as up
 import datetime
 import pandas as pd
 from string import ascii_lowercase as alphabet
+from hermes.constants import WAVE_DATA_PREFIX
 
 JOIN_CHARACTER = '__'
 INPATH_DEFAULT = os.path.join(up(up(up(hermes.__file__))), "universes")
@@ -29,27 +30,120 @@ def ensure_directory(full_path: str) -> str:
         os.makedirs(full_path)
     return full_path
 
-def get_output_path(universe: str, config: str, upper_path: str=OUTPATH_DEFAULT, join_character: str=JOIN_CHARACTER) -> str:
+def get_output_path(
+        universe: str,
+        config: str,
+        upper_path: str=OUTPATH_DEFAULT,
+        join_character: str=JOIN_CHARACTER
+) -> str:
+
     timestamp = get_timestamp()
     output_path = join_character.join([timestamp, universe, config])
     full_path = os.path.join(upper_path, output_path)
     full_path = ensure_directory(full_path)
     return full_path
 
-def get_input_path(universe: str, upper_path: str=INPATH_DEFAULT) -> str:
-    full_path = os.path.join(upper_path, universe)
-    return full_path
+def get_universe_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return os.path.join(
+        upper_path,
+        universe
+    )
+
+def get_universe_subpath(
+        universe: str,
+        subdirectory: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    universe_path = get_universe_path(
+        universe=universe,
+        upper_path=upper_path
+    )
+
+    full_path = os.path.join(
+        universe_path,
+        subdirectory
+    )
+
+    return ensure_directory(
+        full_path
+    )
+
+def get_regression_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="regressions",
+        upper_path=upper_path
+    )
+
+def get_imputation_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="imputations",
+        upper_path=upper_path
+    )
+
+def get_persistent_data_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="persistent_data",
+        upper_path=upper_path
+    )
+
+def get_config_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="configs",
+        upper_path=upper_path
+    )
+
+def get_population_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="populations",
+        upper_path=upper_path
+    )
+
+def get_rate_table_path(
+        universe: str,
+        upper_path: str = INPATH_DEFAULT
+) -> str:
+
+    return get_universe_subpath(
+        universe=universe,
+        subdirectory="rate_tables",
+        upper_path=upper_path
+    )
 
 def get_latest_by_config(universe: str, config: str, outpath: str=OUTPATH_DEFAULT) -> str:
     universe_fullname = JOIN_CHARACTER + universe + JOIN_CHARACTER
     _path = sorted([el for el in os.listdir(outpath) if universe_fullname in el and el.endswith(config)])[-1]
     fullpath = os.path.join(outpath, _path)
     return fullpath
-
-def get_regression_path(universe: str, upper_path: str = INPATH_DEFAULT):
-    universe_path = get_input_path(universe=universe, upper_path=upper_path)
-    regression_path = os.path.join(universe_path, "regressions")
-    return ensure_directory(regression_path)
 
 def resolve_transition_priorities(transitions: list) -> list:
     """Parse and order transition model priorities as follows:
@@ -106,3 +200,12 @@ def get_ukhls_data(year, dataset):
     dataset_fullpath = os.path.join(data_path, dataset_filename)
     data = pd.read_stata(dataset_fullpath, convert_categoricals=False)
     return data
+
+def get_wave_filename(
+        wave_number
+):
+
+    return (
+        f"{WAVE_DATA_PREFIX}"
+        f"{wave_number}.csv"
+    )
