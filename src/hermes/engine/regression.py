@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from hermes import utilities as hutils
 from hermes.regressions.base import RegressionModel
-from hermes.constants import WAVE_DATA_PREFIX, WAVE_DATA_SUFFIX
+from hermes.constants import WAVE_DATA_PREFIX, WAVE_DATA_SUFFIX, REGRESSION_LAG
 
 REGRESSION_ALIASES = {
     "linear": "LinearRegressionModel",
@@ -68,6 +68,17 @@ class Regression:
                 "must be supplied."
             )
 
+        lag = self.spec.get(
+            "lag",
+            REGRESSION_LAG
+        )
+
+        if lag != 1:
+            raise NotImplementedError(
+                f"Regression lag = {lag} "
+                f"is not yet implemented."
+            )
+
         regression_name, regression_class = (
             self.get_regression_class()
         )
@@ -103,7 +114,9 @@ class Regression:
             1
         )
 
-        if len(wave_files) < minimum_waves:
+        if len(wave_files) < (
+                minimum_waves + lag - 1
+        ):
             raise ValueError(
                 f"{regression_class.__name__} "
                 f"requires at least "
@@ -198,8 +211,9 @@ class Regression:
             "uid"
         )
 
-    def create_training_dataset(
+    def prepare_training_dataset(
             self,
+            regression,
             data_path,
             wave_files
     ):
@@ -214,12 +228,17 @@ class Regression:
             "\nCreating training dataset..."
         )
 
+        lag = self.spec.get(
+            "lag",
+            REGRESSION_LAG
+        )
+
         for i in range(
-                len(wave_files) - 1
+                len(wave_files) - lag
         ):
             current_file = wave_files[i]
 
-            next_file = wave_files[i + 1]
+            next_file = wave_files[i + lag]
 
             print(
                 f"{current_file} "
@@ -243,28 +262,15 @@ class Regression:
 
             if uid_column is None:
 
-                #
-                # No UIDs
-                #
-
-                pair_training_data = (
-                    current_wave[
-                        self.spec["predictors"]
-                    ]
-                    .copy()
+                merged = pd.concat(
+                    [
+                        current_wave.add_suffix("_current"),
+                        next_wave.add_suffix("_next")
+                    ],
+                    axis=1
                 )
 
-                pair_training_data[
-                    self.spec["response"]
-                ] = next_wave[
-                    self.spec["predictors"][0]
-                ]
-
             else:
-
-                #
-                # With UID matching
-                #
 
                 merged = current_wave.merge(
                     next_wave,
@@ -275,23 +281,13 @@ class Regression:
                     )
                 )
 
-                pair_training_data = pd.DataFrame()
-
-                for predictor in self.spec["predictors"]:
-                    pair_training_data[predictor] = (
-                        merged[
-                            predictor + "_current"
-                            ]
-                    )
-
-                pair_training_data[
-                    self.spec["response"]
-                ] = (
-                    merged[
-                        self.spec["predictors"][0]
-                        + "_next"
-                        ]
+            pair_training_data = (
+                regression.create_training_dataset(
+                    merged=merged,
+                    predictors=self.spec["predictors"],
+                    response=self.spec["response"]
                 )
+            )
 
             datasets.append(
                 pair_training_data
@@ -315,7 +311,7 @@ class Regression:
         print(
             "Expected rows:",
             (
-                    len(wave_files) - 1
+                    len(wave_files) - lag
             )
             * len(current_wave)
         )
@@ -357,6 +353,11 @@ class Regression:
             "training_universe":
                 self.spec["universe"],
 
+            "lag": self.spec.get(
+                "lag",
+                REGRESSION_LAG
+            ),
+
             "timestamp":
                 hutils.get_timestamp(),
 
@@ -397,16 +398,6 @@ class Regression:
             "Running Regression model handler"
         )
 
-        print(
-            "Available regression models:"
-        )
-
-        print(
-            list(
-                RegressionModel.registry.keys()
-            )
-        )
-
         regression_name, regression_class = (
             self.get_regression_class()
         )
@@ -441,18 +432,31 @@ class Regression:
         )
 
         training_data = (
-            self.create_training_dataset(
+            self.prepare_training_dataset(
+                regression,
                 data_path,
                 wave_files
             )
         )
+
+        # print(
+        #     training_data[
+        #         RegressionModel.RESPONSE_COLUMN
+        #     ].value_counts()
+        # )
+        #
+        # print(
+        #     training_data.groupby("education")
+        #     [RegressionModel.RESPONSE_COLUMN]
+        #     .mean()
+        # )
 
         X = training_data[
             self.spec["predictors"]
         ].to_numpy()
 
         y = training_data[
-            self.spec["response"]
+            RegressionModel.RESPONSE_COLUMN
         ].to_numpy()
 
         regression.fit(
