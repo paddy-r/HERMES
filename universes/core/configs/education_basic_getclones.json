@@ -1,5 +1,5 @@
 {
-  "population": "population.csv",
+  "population": "population_artefact.csv",
 
   "population_structure": {
 
@@ -14,9 +14,9 @@
 
   "transitions": [
     {
-      "name": "TimeStochastic",
+      "name": "EducationLogit",
 
-      "priority": 1
+      "priority": 2
     }
   ],
 
