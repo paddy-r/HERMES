@@ -1,7 +1,71 @@
 from sklearn.linear_model import LogisticRegression
 from hermes.regressions.base import RegressionModel
+import pandas as pd
 
 
 class LogisticRegressionModel(RegressionModel):
 
-    mimimum_waves = 1
+    minimum_waves = 2
+
+    def __init__(self):
+
+        self.model = (
+            LogisticRegression(
+                max_iter=1000
+            )
+        )
+
+    def transform_response(
+            self,
+            current,
+            future
+    ):
+        return (
+                future > current
+        ).astype(int)
+
+    def fit(
+            self,
+            X,
+            y
+    ):
+
+        self.model.fit(
+            X,
+            y
+        )
+
+        print(
+            "Coefficients:"
+        )
+
+        print(
+            self.model.coef_
+        )
+
+        print(
+            "Intercept:"
+        )
+
+        print(
+            self.model.intercept_
+        )
+
+    def predict_proba(
+            self,
+            X
+    ):
+
+        return self.model.predict_proba(
+            X
+        )
+
+    def get_metadata(self):
+
+        return {
+            "coefficients":
+                self.model.coef_.tolist(),
+
+            "intercept":
+                self.model.intercept_.tolist()
+        }
