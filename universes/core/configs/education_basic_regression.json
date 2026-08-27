@@ -1,0 +1,27 @@
+{
+  "population": "population_artefact.csv",
+
+  "invalid": {
+    "education": [
+      "na"
+    ]
+  },
+
+  "transitions": [
+    {
+      "name": "EducationRegression",
+
+      "priority": 1,
+
+      "rate_source": {
+        "type": "regression",
+
+        "model":
+          "education_basic_getclones__LogisticRegressionModel"
+
+      }
+    }
+  ],
+
+  "steps": 10
+}
