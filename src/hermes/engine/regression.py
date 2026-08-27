@@ -73,10 +73,28 @@ class Regression:
             REGRESSION_LAG
         )
 
-        if lag != 1:
+        if lag < 0:
+            raise ValueError(
+                f"Regression lag < 0 "
+                f"not allowed; replace with lag => 0."
+            )
+
+        if lag > 1:
             raise NotImplementedError(
-                f"Regression lag = {lag} "
+                f"Regression lag = {lag}"
                 f"is not yet implemented."
+            )
+
+        if (
+                lag == 0
+                and
+                self.spec["response"]
+                in self.spec["predictors"]
+        ):
+            raise ValueError(
+                "Response variable may not also "
+                "appear in predictors when "
+                "lag = 0."
             )
 
         regression_name, regression_class = (
