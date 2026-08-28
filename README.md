@@ -98,8 +98,8 @@ To familiarise yourself with how the HERMES microsimulation engine works, follow
 
 *Tip:* Users execute HERMES regressions via the command `hermes-regress` along with required fields: the training dataset, predictor and response variables, and the type of regression to be fitted. Users can type `hermes-regress --help` at the command line for more information.
 
-- *Currently implemented:* Linear regression model.
-- *In development:* Logistic regression model, fixed effects model, random effects model, survival model and event history model.
+- *Currently implemented:* Linear and logistic regression models.
+- *In development:* Fixed effects model, random effects model, survival model and event history model.
 
 *Quick start guide*
 
