@@ -11,14 +11,11 @@
         "type": "regression",
 
         "model":
-          "time_stochastic__LinearRegressionModel.pkl",
+          "time_stochastic_getclones__LinearRegressionModel",
 
         "model_path":
-          "/home/prehr/code/",
+          "/home/prehr/code/"
 
-        "domains": [
-          "income"
-        ]
       }
     }
   ],

@@ -21,7 +21,7 @@ class Population:
         if self.structure:
 
             self.ensure_uids(
-                verbose=True
+                verbose=False
             )
 
     def __repr__(self):

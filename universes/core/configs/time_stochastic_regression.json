@@ -11,11 +11,8 @@
         "type": "regression",
 
         "model":
-          "time_stochastic__LinearRegressionModel.pkl",
+          "time_stochastic_getclones__LinearRegressionModel"
 
-        "domains": [
-          "income"
-        ]
       }
     }
   ],
