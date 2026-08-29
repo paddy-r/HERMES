@@ -80,9 +80,15 @@ class Regression:
             )
 
         if lag > 1:
-            raise NotImplementedError(
-                f"Regression lag = {lag}"
-                f"is not yet implemented."
+            print(
+                f"Warning: regression lag = {lag}. "
+                f"This model will estimate relationships "
+                f"across {lag} waves rather than a single-wave "
+                f"transition. Coefficients may therefore require "
+                f"additional interpretation. If single-wave "
+                f"coefficients are preferred, consider generating "
+                f"or imputing intermediate waves (e.g. with "
+                f"hermes-impute) and using lag = 1 instead."
             )
 
         if (
