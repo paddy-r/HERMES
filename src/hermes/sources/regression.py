@@ -9,6 +9,12 @@ from hermes.constants import REGRESSION_LAG
 class RegressionSource(Source):
 
     @property
+    def regression_type(self):
+        return self.metadata.get(
+            "regression_type"
+        )
+
+    @property
     def predictors(self):
         return self.metadata.get(
             "predictors",
