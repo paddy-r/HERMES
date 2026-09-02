@@ -105,27 +105,56 @@ class TimeRegression(TransitionModel):
             "age"
         ] += 1
 
-        current_income = (
+        predictor_names = (
+            self.rate_source.predictors
+        )
+
+        response_domain = (
+            self.rate_source.response
+        )
+
+        income_before = (
             population.data.loc[
                 alive,
-                "income"
+                response_domain
             ]
+            .astype(float)
             .copy()
+        )
+
+        predictor_data = (
+            population.data.loc[
+                alive,
+                predictor_names
+            ]
         )
 
         predicted_values = (
             self.rate_source.predict(
-                current_income.to_numpy().reshape(-1, 1)
+                predictor_data.to_numpy()
             )
+        )
+
+        population.data[
+            response_domain
+        ] = (
+            population.data[
+                response_domain
+            ].astype(float)
         )
 
         population.data.loc[
             alive,
-            "income"
+            response_domain
+        ] = predicted_values
+
+        population.data.loc[
+            alive,
+            response_domain
         ] = predicted_values
 
         mean_income_before = (
-            current_income.mean()
+            income_before.mean()
         )
 
         mean_income_after = (
