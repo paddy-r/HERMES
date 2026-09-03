@@ -39,14 +39,14 @@ class LinearRegressionModel(RegressionModel):
         print(
             self.model.intercept_
         )
-
-        return {
-            "coefficients":
-                self.model.coef_.tolist(),
-
-            "intercept":
-                float(self.model.intercept_)
-        }
+        #
+        # return {
+        #     "coefficients":
+        #         self.model.coef_.tolist(),
+        #
+        #     "intercept":
+        #         float(self.model.intercept_)
+        # }
 
     def get_metadata(self):
         return {

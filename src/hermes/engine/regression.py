@@ -80,9 +80,15 @@ class Regression:
             )
 
         if lag > 1:
-            raise NotImplementedError(
-                f"Regression lag = {lag}"
-                f"is not yet implemented."
+            print(
+                f"Warning: regression lag = {lag}. "
+                f"This model will estimate relationships "
+                f"across {lag} waves rather than a single-wave "
+                f"transition. Coefficients may therefore require "
+                f"additional interpretation. If single-wave "
+                f"coefficients are preferred, consider generating "
+                f"or imputing intermediate waves (e.g. with "
+                f"hermes-impute) and using lag = 1 instead."
             )
 
         if (
@@ -100,6 +106,20 @@ class Regression:
         regression_name, regression_class = (
             self.get_regression_class()
         )
+
+        if (
+                lag == 0
+                and
+                regression_name
+                == "LogisticRegressionModel"
+        ):
+            raise NotImplementedError(
+                "Cross-sectional logistic "
+                "regression requires a "
+                "response definition. "
+                "This will be addressed "
+                "in a future issue."
+            )
 
         data_path, wave_files = (
             self.get_training_data()
@@ -254,27 +274,27 @@ class Regression:
         for i in range(
                 len(wave_files) - lag
         ):
-            current_file = wave_files[i]
+            predictor_file = wave_files[i]
 
-            next_file = wave_files[i + lag]
+            response_file = wave_files[i + lag]
 
             print(
-                f"{current_file} "
+                f"{predictor_file} "
                 f"-> "
-                f"{next_file}"
+                f"{response_file}"
             )
 
-            current_wave = pd.read_csv(
+            predictor_wave = pd.read_csv(
                 os.path.join(
                     data_path,
-                    current_file
+                    predictor_file
                 )
             )
 
-            next_wave = pd.read_csv(
+            response_wave = pd.read_csv(
                 os.path.join(
                     data_path,
-                    next_file
+                    response_file
                 )
             )
 
@@ -282,20 +302,20 @@ class Regression:
 
                 merged = pd.concat(
                     [
-                        current_wave.add_suffix("_current"),
-                        next_wave.add_suffix("_next")
+                        predictor_wave.add_suffix("_predictor"),
+                        response_wave.add_suffix("_response")
                     ],
                     axis=1
                 )
 
             else:
 
-                merged = current_wave.merge(
-                    next_wave,
+                merged = predictor_wave.merge(
+                    response_wave,
                     on=uid_column,
                     suffixes=(
-                        "_current",
-                        "_next"
+                        "_predictor",
+                        "_response"
                     )
                 )
 
@@ -331,7 +351,7 @@ class Regression:
             (
                     len(wave_files) - lag
             )
-            * len(current_wave)
+            * len(predictor_wave)
         )
 
         return training_data

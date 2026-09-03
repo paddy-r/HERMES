@@ -17,11 +17,11 @@ class LogisticRegressionModel(RegressionModel):
 
     def transform_response(
             self,
-            current,
-            future
+            predictor_wave,
+            response_wave
     ):
         return (
-                future > current
+                response_wave > predictor_wave
         ).astype(int)
 
     def fit(

@@ -22,25 +22,25 @@ class RegressionModel:
             merged,
             response
     ):
-        current = merged[
-            f"{response}_current"
+        predictor_wave = merged[
+            f"{response}_predictor"
         ]
 
-        future = merged[
-            f"{response}_next"
+        response_wave = merged[
+            f"{response}_response"
         ]
 
         return self.transform_response(
-            current,
-            future
+            predictor_wave,
+            response_wave
         )
 
     def transform_response(
             self,
-            current,
-            future
+            predictor_wave,
+            response_wave
     ):
-        return future
+        return response_wave
 
     def create_training_dataset(
             self,
@@ -53,7 +53,7 @@ class RegressionModel:
         for predictor in predictors:
             training_data[predictor] = (
                 merged[
-                    predictor + "_current"
+                    predictor + "_predictor"
                     ]
             )
 
