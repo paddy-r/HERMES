@@ -107,6 +107,20 @@ class Regression:
             self.get_regression_class()
         )
 
+        if (
+                lag == 0
+                and
+                regression_name
+                == "LogisticRegressionModel"
+        ):
+            raise NotImplementedError(
+                "Cross-sectional logistic "
+                "regression requires a "
+                "response definition. "
+                "This will be addressed "
+                "in a future issue."
+            )
+
         data_path, wave_files = (
             self.get_training_data()
         )
