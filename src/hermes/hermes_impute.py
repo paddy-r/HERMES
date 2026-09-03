@@ -6,7 +6,7 @@ import hermes.utilities as hutils
 
 DEFAULTS = {
     "signature": True,
-    # "dump": True,
+    "generate": False,
 }
 
 
@@ -89,15 +89,15 @@ def main():
         help="Show HERMES signature at runtime",
     )
 
-    # parser.add_argument(
-    #     "-d",
-    #     "--dump",
-    #     required=False,
-    #     type=str,
-    #     dest="dump",
-    #     default=DEFAULTS["dump"],
-    #     help="Output imputed data",
-    # )
+    parser.add_argument(
+        "-g",
+        "--generate",
+        required=False,
+        type=str,
+        dest="generate",
+        default=DEFAULTS["geneate"],
+        help="Generate missingness",
+    )
 
     args = parser.parse_args()
     hermes_spec = vars(args)
