@@ -1,8 +1,8 @@
 import numpy as np
-from hermes.rate_sources.base import RateSource
+from hermes.sources.base import Source
 
 
-class RateTable(RateSource):
+class RateTable(Source):
 
     def __init__(self, table):
 

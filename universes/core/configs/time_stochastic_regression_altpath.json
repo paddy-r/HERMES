@@ -11,7 +11,10 @@
         "type": "regression",
 
         "model":
-          "time_stochastic_getclones__LinearRegressionModel"
+          "time_stochastic_getclones__LinearRegressionModel",
+
+        "model_path":
+          "/home/prehr/code/"
 
       }
     }

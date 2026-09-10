@@ -1,6 +1,17 @@
 {
   "population": "population.csv",
 
+  "population_structure": {
+
+    "area_column": "area_id",
+
+    "levels": [
+      "household_id",
+      "id"
+    ]
+
+  },
+
   "transitions": [
     {
       "name": "TimeStochastic",

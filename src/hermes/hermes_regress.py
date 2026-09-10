@@ -2,6 +2,7 @@
 import argparse
 import hermes.engine
 import hermes.utilities as hutils
+from hermes.constants import REGRESSION_LAG
 
 DEFAULTS = {"signature": True,
             # "dump": True,
@@ -44,9 +45,37 @@ def main():
     parser.add_argument("-s", "--signature", required=False, type=str, dest='signature',
                         help="Show HERMES signature at runtime", default=DEFAULTS["signature"],
                         )
-    # parser.add_argument("-d", "--dump", required=False, type=str, dest='dump',
-    #                     help="Output population at each step at runtime", default=DEFAULTS["dump"],
-    #                     )
+    parser.add_argument(
+        "--uid",
+        type=str,
+        dest="uid",
+        default=None,
+        help="Persistent unique ID (UID) used to match units across waves"
+    )
+    parser.add_argument(
+        "--group",
+        action="store_true",
+        dest="group",
+        help="Train grouped regression model (e.g. household-level model)"
+    )
+    parser.add_argument(
+        "--training_path",
+        dest="training_path",
+        help="Path containing wave CSV files for training."
+             "Currently, -u and -c remain mandatory even when training_path is specified."
+             "This behaviour may be relaxed in a future release."
+    )
+    parser.add_argument(
+        "--lag",
+        type=int,
+        dest="lag",
+        default=REGRESSION_LAG,
+        help=(
+            "Number of waves between "
+            "predictors and response. "
+            "(default: 1)"
+        )
+    )
 
     args = parser.parse_args()
     hermes_spec = vars(args)  # Convert to dictionary

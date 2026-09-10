@@ -25,6 +25,8 @@ populations/*
 universes/*
 !universes/core/
 !universes/core/**
+universes/core/regressions/
+universes/core/regressions/*
 
 # All installation-related files
 src/*egg-info/

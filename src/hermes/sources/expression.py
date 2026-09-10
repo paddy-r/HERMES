@@ -1,5 +1,5 @@
 import numexpr as ne
-from hermes.rate_sources.base import FunctionalForm
+from hermes.sources.base import FunctionalForm
 
 
 class Expression(FunctionalForm):

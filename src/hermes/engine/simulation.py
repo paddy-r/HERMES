@@ -1,9 +1,12 @@
 # HR 29/07/26 Simulation engine classes, moved from earlier common script to its own
 import os
 import json
+import pandas as pd
 import hermes.utilities as hutils
 from .population import Population
-import pandas as pd
+import hermes.verification
+from hermes.verification.base import Verifier
+from hermes.constants import WAVE_DATA_PREFIX
 
 
 class Simulation:
@@ -21,13 +24,22 @@ class Simulation:
         self.outpath = hutils.get_output_path(universe=universe, config=config)
 
         # 2. Read in run spec
-        self.inpath = hutils.get_input_path(universe=universe)
-        if not os.path.isdir(self.inpath):
-            print("Universe input path does not exist; stopping")
+        self.inpath = hutils.get_universe_path(universe=universe)
+
+        if not os.path.isdir(
+                self.inpath
+        ):
+            print(
+                "Universe input path does not exist; stopping"
+            )
             return
 
         # 3. Get config and population files
-        config_file = os.path.join(self.inpath, "configs", config + '.json')
+        config_file = os.path.join(
+            self.inpath,
+            "configs",
+            config + '.json',
+        )
         with open(config_file, 'r') as f:
             run_config = json.load(f)
             self.spec.update(run_config)  # Add all parameters in config file to spec
@@ -36,9 +48,21 @@ class Simulation:
             transition["inpath"] = self.inpath
 
         # 4. Load population data
-        population_file = os.path.join(self.inpath, spec['population'])
+        population_file = os.path.join(
+            self.inpath,
+            "populations",
+            spec['population'],
+        )
         population_data = pd.read_csv(population_file)
-        self.population = Population(data=population_data)
+
+        population_structure = spec.get(
+            "population_structure",
+            {}
+        )
+        self.population = Population(
+            data=population_data,
+            structure=population_structure,
+        )
 
         # 5. Resolve transition model priorities, then import each dynamically + instantiate
         import hermes.transitions
@@ -67,12 +91,6 @@ class Simulation:
                     TransitionModel.registry[model]
                 )
 
-            # else:
-            #     model_class = getattr(
-            #         transitions_module,
-            #         model
-            #     )
-
             self.models.append(
                 model_class(
                     transition_attrs[model]
@@ -83,9 +101,6 @@ class Simulation:
 
         print("Verifying configuration...")
 
-        import hermes.verification
-        from hermes.verification.base import Verifier
-
         verifiers = sorted(Verifier.registry.values(),
                            key=lambda x: x.priority)
 
@@ -93,8 +108,10 @@ class Simulation:
             verifier().verify(self)
 
 
-    def save_population(self, step_number):
-        pop_file = "step" + str(step_number) + ".csv"
+    def save_population(self, wave_number):
+        pop_file = hutils.get_wave_filename(
+            wave_number
+        )
         fullpath = os.path.join(self.outpath, pop_file)
         self.population.data.to_csv(fullpath, index=False)
 
@@ -103,7 +120,7 @@ class Simulation:
 
         # Save input population
         if self.dump:
-            self.save_population(step_number=0)
+            self.save_population(wave_number=0)
 
         n_steps = self.spec["steps"]
         for i in range(n_steps):
@@ -111,4 +128,5 @@ class Simulation:
             for j, model in enumerate(self.models):
                 self.models[j].apply_transition(self.population)
             if self.dump:
-                self.save_population(step_number=i+1)
+                self.save_population(wave_number=i+1)
+

@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 
 
-class RateSource(ABC):
+class Source(ABC):
 
     @abstractmethod
     def evaluate(self, domains):
         pass
 
 
-class FunctionalForm(RateSource):
+class FunctionalForm(Source):
 
     registry = {}
 

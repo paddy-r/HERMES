@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-from hermes.rate_sources.base import FunctionalForm
-from hermes.rate_sources.rate_table import RateTable
+from hermes.sources.base import FunctionalForm
+from hermes.sources.rate_table import RateTable
 from hermes.engine.population import Population
+from hermes.sources.regression import RegressionSource
+
 import os
 
 
@@ -49,20 +51,25 @@ class TransitionModel(ABC):
                 ]
             )
 
-            # return function_class(
-            #     domains=config["domains"],
-            #     parameters=config["parameters"]
             return function_class(**config)
 
         elif source_type == "rate_table":
 
             fullpath = os.path.join(
                 self.inpath,
+                "rate_tables",
                 config["file"]
             )
             table = pd.read_csv(fullpath)
 
             return RateTable(table)
+
+        elif source_type == "regression":
+
+            return RegressionSource(
+                config=config,
+                inpath=self.inpath
+            )
 
         raise ValueError(
             f"Unknown rate source type: {source_type}"

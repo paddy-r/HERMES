@@ -80,7 +80,7 @@ if __name__ == "__main__":
     synthpop_bare = os.path.join(CURRENT_PATH, "input_data", "synthetic_population_bare.csv")
     validation = os.path.join(CURRENT_PATH, "input_data", "synthetic_population_validation.csv")
     microdata_ind_out = os.path.join(CURRENT_PATH, "input_data", "microdata_ind.csv")
-    sp_out = os.path.join(CURRENT_PATH, "population.csv")
+    sp_out = os.path.join(CURRENT_PATH, "populations/population.csv")
 
     # 2a. Overwrite config fields as necessary
     config_dict_updates = {

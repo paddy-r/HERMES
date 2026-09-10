@@ -1,10 +1,10 @@
-from hermes.regressions.base import RegressionModel
 import json
 import pickle
 import os
 import pandas as pd
 from hermes import utilities as hutils
-
+from hermes.regressions.base import RegressionModel
+from hermes.constants import WAVE_DATA_PREFIX, WAVE_DATA_SUFFIX, REGRESSION_LAG
 
 REGRESSION_ALIASES = {
     "linear": "LinearRegressionModel",
@@ -28,27 +28,13 @@ class Regression:
             "Initialising Regression model handler"
         )
 
-    def verify(self):
-
-        print(
-            "Verifying Regression model handler"
-        )
-
-    def run(self):
-
-        print(
-            "Running Regression model handler"
-        )
-
-        print(
-            "Available regression models:"
-        )
-
-        print(
-            list(
-                RegressionModel.registry.keys()
+        if spec.get("group", False):
+            raise NotImplementedError(
+                "Grouped regression training "
+                "not yet implemented."
             )
-        )
+
+    def get_regression_class(self):
 
         regression_name = (
             REGRESSION_ALIASES.get(
@@ -57,109 +43,298 @@ class Regression:
             )
         )
 
-        regression_class = (
+        return (
+            regression_name,
             RegressionModel.registry[
                 regression_name
             ]
         )
 
-        print(
-            f"Selected regression model: "
-            f"{regression_class.__name__}"
-        )
-
-        regression = regression_class()
+    def verify(self):
 
         print(
-            regression
+            "Verifying Regression model handler"
         )
 
-        regression_path = (
-            hutils.get_regression_path(
-                self.spec["universe"]
+        if not self.spec["predictors"]:
+            raise ValueError(
+                "At least one predictor "
+                "must be supplied."
             )
-        )
 
-        filename = (
-            self.spec["config"]
-            + "__"
-            + regression_name
-            + ".pkl"
-        )
-
-        fullpath = os.path.join(
-            regression_path,
-            filename
-        )
-
-        data_path = (
-            hutils.get_latest_by_config(
-                universe=self.spec["universe"],
-                config=self.spec["config"]
+        if not self.spec["response"]:
+            raise ValueError(
+                "A response variable "
+                "must be supplied."
             )
+
+        lag = self.spec.get(
+            "lag",
+            REGRESSION_LAG
         )
 
-        print(
-            f"Training data path:\n"
-            f"{data_path}"
+        if lag < 0:
+            raise ValueError(
+                f"Regression lag < 0 "
+                f"not allowed; replace with lag => 0."
+            )
+
+        if lag > 1:
+            print(
+                f"Warning: regression lag = {lag}. "
+                f"This model will estimate relationships "
+                f"across {lag} waves rather than a single-wave "
+                f"transition. Coefficients may therefore require "
+                f"additional interpretation. If single-wave "
+                f"coefficients are preferred, consider generating "
+                f"or imputing intermediate waves (e.g. with "
+                f"hermes-impute) and using lag = 1 instead."
+            )
+
+        if (
+                lag == 0
+                and
+                self.spec["response"]
+                in self.spec["predictors"]
+        ):
+            raise ValueError(
+                "Response variable may not also "
+                "appear in predictors when "
+                "lag = 0."
+            )
+
+        regression_name, regression_class = (
+            self.get_regression_class()
         )
 
-        step_files = sorted(
+        if (
+                lag == 0
+                and
+                regression_name
+                == "LogisticRegressionModel"
+        ):
+            raise NotImplementedError(
+                "Cross-sectional logistic "
+                "regression requires a "
+                "response definition. "
+                "This will be addressed "
+                "in a future issue."
+            )
+
+        data_path, wave_files = (
+            self.get_training_data()
+        )
+
+        uid_column = (
+            self.get_uid_column()
+        )
+
+        if uid_column is not None:
+
+            wave = pd.read_csv(
+                os.path.join(
+                    data_path,
+                    wave_files[0]
+                )
+            )
+
+            if uid_column not in wave.columns:
+                raise ValueError(
+                    f"UID column "
+                    f"'{uid_column}' "
+                    f"not found in "
+                    f"{wave_files[0]}."
+                )
+
+        minimum_waves = getattr(
+            regression_class,
+            "minimum_waves",
+            1
+        )
+
+        if len(wave_files) < (
+                minimum_waves + lag - 1
+        ):
+            raise ValueError(
+                f"{regression_class.__name__} "
+                f"requires at least "
+                f"{minimum_waves} waves "
+                f"of training data. "
+                f"Found only "
+                f"{len(wave_files)}."
+            )
+
+    def get_training_data(self):
+
+        def get_wave_number(
+                filename,
+                wave_prefix,
+                wave_suffix
+        ):
+
+            return int(
+                filename
+                .replace(
+                    wave_prefix,
+                    ""
+                )
+                .replace(
+                    wave_suffix,
+                    ""
+                )
+            )
+
+        if self.spec.get(
+                "training_path"
+        ) is not None:
+
+            data_path = (
+                self.spec["training_path"]
+            )
+
+        else:
+
+            data_path = (
+                hutils.get_latest_by_config(
+                    universe=self.spec["universe"],
+                    config=self.spec["config"]
+                )
+            )
+
+        wave_prefix = self.spec.get(
+            "wave_prefix",
+            WAVE_DATA_PREFIX
+        )
+
+        wave_suffix = self.spec.get(
+            "wave_suffix",
+            WAVE_DATA_SUFFIX
+        )
+
+        wave_files = sorted(
             [
                 file
                 for file in os.listdir(
-                    data_path
-                )
+                data_path
+            )
                 if file.startswith(
-                    "step"
-                )
-                and file.endswith(
-                    ".csv"
-                )
-            ]
+                wave_prefix
+            )
+                   and file.endswith(
+                wave_suffix
+            )
+            ],
+            key=lambda x:
+            get_wave_number(
+                x,
+                wave_prefix,
+                wave_suffix
+            )
         )
 
         print(
             f"Found "
-            f"{len(step_files)} "
-            f"step files"
+            f"{len(wave_files)} "
+            f"wave files\n"
         )
 
-        wave0 = pd.read_csv(
-            os.path.join(
-                data_path,
-                step_files[0]
-            )
+        return (
+            data_path,
+            wave_files
         )
 
-        wave1 = pd.read_csv(
-            os.path.join(
-                data_path,
-                step_files[1]
-            )
+    def get_uid_column(self):
+
+        return self.spec.get(
+            "uid"
         )
+
+    def prepare_training_dataset(
+            self,
+            regression,
+            data_path,
+            wave_files
+    ):
+
+        uid_column = (
+            self.get_uid_column()
+        )
+
+        datasets = []
 
         print(
-            "Wave 0 shape:",
-            wave0.shape
+            "\nCreating training dataset..."
         )
 
-        print(
-            "Wave 1 shape:",
-            wave1.shape
+        lag = self.spec.get(
+            "lag",
+            REGRESSION_LAG
         )
 
-        training_data = wave0[
-            self.spec["predictors"]
-        ].copy()
+        for i in range(
+                len(wave_files) - lag
+        ):
+            predictor_file = wave_files[i]
 
-        # Temporary: response is predictor[0] measured in the next wave
+            response_file = wave_files[i + lag]
 
-        training_data[
-            self.spec["response"]
-        ] = wave1[
-            self.spec["predictors"][0]
-        ]
+            print(
+                f"{predictor_file} "
+                f"-> "
+                f"{response_file}"
+            )
+
+            predictor_wave = pd.read_csv(
+                os.path.join(
+                    data_path,
+                    predictor_file
+                )
+            )
+
+            response_wave = pd.read_csv(
+                os.path.join(
+                    data_path,
+                    response_file
+                )
+            )
+
+            if uid_column is None:
+
+                merged = pd.concat(
+                    [
+                        predictor_wave.add_suffix("_predictor"),
+                        response_wave.add_suffix("_response")
+                    ],
+                    axis=1
+                )
+
+            else:
+
+                merged = predictor_wave.merge(
+                    response_wave,
+                    on=uid_column,
+                    suffixes=(
+                        "_predictor",
+                        "_response"
+                    )
+                )
+
+            pair_training_data = (
+                regression.create_training_dataset(
+                    merged=merged,
+                    predictors=self.spec["predictors"],
+                    response=self.spec["response"]
+                )
+            )
+
+            datasets.append(
+                pair_training_data
+            )
+
+        training_data = pd.concat(
+            datasets,
+            ignore_index=True
+        )
 
         print(
             "Training dataset shape:",
@@ -167,31 +342,27 @@ class Regression:
         )
 
         print(
-            training_data.head()
+            "Training rows:",
+            len(training_data)
         )
 
         print(
-            training_data.describe()
-        )
-
-        print(
-            training_data.corr(
-                numeric_only=True
+            "Expected rows:",
+            (
+                    len(wave_files) - lag
             )
+            * len(predictor_wave)
         )
 
-        X = training_data[
-            self.spec["predictors"]
-        ]
+        return training_data
 
-        y = training_data[
-            self.spec["response"]
-        ]
-
-        fit_results = regression.fit(
-            X,
-            y
-        )
+    def save_model(
+            self,
+            regression,
+            regression_class,
+            fullpath,
+            training_data
+    ):
 
         with open(fullpath, "wb") as f:
             pickle.dump(
@@ -219,6 +390,11 @@ class Regression:
 
             "training_universe":
                 self.spec["universe"],
+
+            "lag": self.spec.get(
+                "lag",
+                REGRESSION_LAG
+            ),
 
             "timestamp":
                 hutils.get_timestamp(),
@@ -252,4 +428,83 @@ class Regression:
         print(
             f"Created regression metadata:\n"
             f"{json_path}"
+        )
+
+    def run(self):
+
+        print(
+            "Running Regression model handler"
+        )
+
+        regression_name, regression_class = (
+            self.get_regression_class()
+        )
+
+        print(
+            f"Selected regression model: "
+            f"{regression_class.__name__}"
+        )
+
+        regression = regression_class()
+
+        regression_path = (
+            hutils.get_regression_path(
+                self.spec["universe"]
+            )
+        )
+
+        filename = (
+                self.spec["config"]
+                + "__"
+                + regression_name
+                + ".pkl"
+        )
+
+        fullpath = os.path.join(
+            regression_path,
+            filename
+        )
+
+        data_path, wave_files = (
+            self.get_training_data()
+        )
+
+        training_data = (
+            self.prepare_training_dataset(
+                regression,
+                data_path,
+                wave_files
+            )
+        )
+
+        # print(
+        #     training_data[
+        #         RegressionModel.RESPONSE_COLUMN
+        #     ].value_counts()
+        # )
+        #
+        # print(
+        #     training_data.groupby("education")
+        #     [RegressionModel.RESPONSE_COLUMN]
+        #     .mean()
+        # )
+
+        X = training_data[
+            self.spec["predictors"]
+        ].to_numpy()
+
+        y = training_data[
+            RegressionModel.RESPONSE_COLUMN
+        ].to_numpy()
+
+        regression.fit(
+            X,
+            y
+        )
+
+        self.save_model(
+            regression=regression,
+            regression_class=regression_class,
+            fullpath=fullpath,
+            training_data=training_data
         )
